@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+    h3= title
+    if items_list.length > 0
+        hr
+        div(style='display: flex; gap: 10px; flex-wrap: wrap;')
+            each item in items_list
+                div(style='display: flex; flex-direction: column; width: 250px;')
+                    img(src=item.imageUrl, alt=item.name, style='width: 150px; height: 150px; object-fit: cover;')
+                    a(style="font-size: 14px; margin-top: .3rem; " href='/home/items/' + item._id)= item.name
+                    small $!{item.price}
+    else
+        p No items available

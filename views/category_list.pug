@@ -1,0 +1,12 @@
+extends layout
+
+block content
+    h3= title
+    if categories_list.length > 0
+        hr
+        ul.list_group
+            each category in categories_list
+                li
+                    a(href='/home/categories/' + category._id)= category.name
+    else
+        p No categories available
