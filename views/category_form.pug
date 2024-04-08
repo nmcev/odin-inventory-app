@@ -1,0 +1,16 @@
+extends layout
+
+block content
+
+    h2 #{title}
+    hr
+    form(method='POST')
+        div
+            label(for='name') Category name:
+            input#name(type='text' placeholder='Games, Puzzles, etc...' name='name' required value=(typeof category.name !== 'undefined' ? category.name : ''))
+        button.btn.btn-primary(type='submit') Submit
+
+    if errors
+        ul
+            for error in errors
+                li= error.msg

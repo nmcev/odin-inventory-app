@@ -17,3 +17,15 @@ a {
   list-style-type: none;
 }
 
+
+.form-group{
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  width: 30%;
+}
+.form-group > input {
+  padding: .2rem;
+}

@@ -2,15 +2,19 @@ extends layout
 
 block content
 
-    h3= title
+    h3 !{ categoryName.name ? categoryName.name+"'s" : "Items" } list
     if items_list.length > 0
         hr
         div(style='display: flex; gap: 10px; flex-wrap: wrap;')
             each item in items_list
                 div(style='display: flex; flex-direction: column; width: 250px;')
                     a(href='/home/items/' + item._id)
-                     img(src=item.imageUrl, alt=item.name, style='width: 150px; height: 150px; object-fit: cover;')
+                        img(src=item.imageUrl, alt=item.name, style='width: 150px; height: 150px; object-fit: cover;')
                     a(style="font-size: 14px; margin-top: .3rem; " href='/home/items/' + item._id)= item.name
                     small $!{item.price}
     else
         p No items available
+
+    if title === 'Category items'
+        p(style="margin-top: 25px")
+            a(href='/home/categories/update/'+categoryId) Update
