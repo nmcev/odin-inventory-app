@@ -44,10 +44,23 @@ exports.item_create_post = asyncHandler(async (req, res, next) => {
 })
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("Items delete: Not implemented yet")
+    const item = await Item.findById(req.params.id).exec()
+
+    if (item === null) {
+        const err = new Error("Item not found!")
+        err.status = 404
+        return next(err)
+    }
+
+    res.render('item_delete', {
+        title: `Delete ${item.name}`
+    })
 })
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("Items list: Not implemented yet")
+    const item = await Item.findById(req.params.id).exec()
+
+    await Item.findByIdAndDelete(req.params.id)
+    res.redirect(`/home/categories/${item.category._id}`)
 })
 
 exports.item_update_get = asyncHandler(async (req, res, next) => {

@@ -1,7 +1,8 @@
 const asyncHandler = require("express-async-handler");
 const Category = require("../models/category")
 const Items = require("../models/item")
-const { body, validationResult } = require('express-validator')
+const { body, validationResult } = require('express-validator');
+const Item = require("../models/item");
 
 exports.category_list = asyncHandler(async (req, res, next) => {
     const categories = await Category.find().sort({ name: -1 }).exec()
@@ -39,11 +40,23 @@ exports.category_create_post = asyncHandler(async (req, res, next) => {
 })
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
-    res.send("Category delete: Not implemented yet")
+    const categoryItems = await Item.find({ category: req.params.id }).exec()
+
+    if (categoryItems === null) {
+        res.redirect('/home/categories')
+        return;
+    }
+
+    res.render('category_delete', {
+        title: 'Deleting a category',
+        items_list: categoryItems
+    })
 })
 
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
-    res.send("Category delete: Not implemented yet")
+    await Category.findByIdAndDelete(req.params.id)
+    res.redirect('/home/categories')
+
 })
 
 exports.category_update_get = asyncHandler(async (req, res, next) => {

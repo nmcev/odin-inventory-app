@@ -1,0 +1,10 @@
+extends layout
+
+block content
+
+    h2= title
+
+    p Are you sure you want to delete this item?
+
+    form(method='POST')
+        button.btn.btn-danger(type='submit') Submit

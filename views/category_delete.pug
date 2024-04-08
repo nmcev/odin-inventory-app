@@ -1,0 +1,15 @@
+extends layout
+
+block content
+
+    h3= title
+    if items_list.length > 0
+        p You have to delete the following items before deleting the category:
+            ul
+                each item in items_list
+                    li
+                        a(href=item.url) !{item.name}
+    else
+        p are you sure to delete this category
+        form(method="POST")
+            button.btn.btn-danger(type='submit') Delete
