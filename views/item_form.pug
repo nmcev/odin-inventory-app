@@ -1,38 +1,39 @@
 extends layout
 
 block content
-
     h2= title
 
     form(method="POST")
         div.form-group
             label(for="name") Game name:
-            input#name(type="text" name="name" required value=(typeof item === 'undefined' ? '' : item.name))
+            input#name(type="text" name="name" required value=(undefined === item ? '' : item.name))
         div.form-group
             label(for="descr") Description:
-            input#descr(type="text" name="descr" required value=(typeof item === 'undefined' ? '' : item.descr))
+            input#descr(type="text" name="descr" required value=(undefined === item ? '' : item.descr))
         div.form-group
             label(for="category") Category:
             select#category(name="category" required)
                 option(value="") -- Please select a category --
-                each category in categories
-                    if category._id.toString() === item.category._id.toString()
-                        option(value=category._id selected)= category.name
+                for category in categories
+                    if item
+                        if category._id.toString() === item.category._id.toString()
+                            option(value=category._id selected)= category.name
+                        else
+                            option(value=category._id)= category.name
                     else
                         option(value=category._id)= category.name
         div.form-group
             label(for="price") Price:
-            input#price(type="number" name='price'  min = 0 required value=(typeof item === 'undefined' ? '' : item.price))
+            input#price(type="number" name='price'  min = 0 required value=(undefined === item ? '' : item.price))
         div.form-group
             label(for="inStock") In stock:
-            input#inStock(type="number" name='inStock' min = 0 required value=(typeof item === 'undefined' ? '' : item.inStock))
+            input#inStock(type="number" name='inStock' min = 0 required value=(undefined === item ? '' : item.inStock))
         div.form-group
             label(for="imgUrl") Image URL:
-            input#imgUrl(type="text" name='imgUrl' required value=(typeof item === 'undefined' ? '' : item.imageUrl))
+            input#imgUrl(type="text" name='imgUrl' required value=(undefined === item ? '' : item.imageUrl))
         button.btn.btn-primary(type='submit') Submit
 
     if errors
-      ul
-        each error in errors
-          li!= error.msg
-
+        ul
+            for error in errors
+                li!= error.msg

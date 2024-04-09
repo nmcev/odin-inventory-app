@@ -32,12 +32,37 @@ exports.category_detail = asyncHandler(async (req, res, next) => {
 })
 
 exports.category_create_get = asyncHandler(async (req, res, next) => {
-    res.send("Category create: Not implemented yet")
+    res.render('category_form', { title: "Create a category" })
 })
 
-exports.category_create_post = asyncHandler(async (req, res, next) => {
-    res.send("Category create: Not implemented yet")
-})
+exports.category_create_post = [
+    body('name', "name must not be empty")
+        .trim()
+        .isLength({ min: 3 })
+        .escape()
+        .withMessage("name must be at least 3 characters "),
+    asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req)
+
+        const category = new Category({
+            name: req.body.name
+        })
+
+
+        if (!errors.isEmpty()) {
+            res.render('category_form', {
+                title: "Create a category",
+                errors: errors.array(),
+                category: category
+            })
+        }
+        else {
+            await category.save()
+            res.redirect(category.url)
+        }
+
+    })
+]
 
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
     const categoryItems = await Item.find({ category: req.params.id }).exec()

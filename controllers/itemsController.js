@@ -36,12 +36,74 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
 })
 
 exports.item_create_get = asyncHandler(async (req, res, next) => {
-    res.send("Items create: Not implemented yet")
+    const categories = await Category.find().sort({ name: 1 }).exec()
+    res.render("item_form", {
+        title: 'create an item',
+        categories: categories
+    })
 })
 
-exports.item_create_post = asyncHandler(async (req, res, next) => {
-    res.send("Items list: Not implemented yet")
-})
+exports.item_create_post = [
+    body('name', "Name filed must not be empty")
+        .trim()
+        .isLength({ min: 1 })
+        .escape()
+        .withMessage("Name must not be empty"),
+    body('descr')
+        .trim()
+        .trim()
+        .escape(),
+    body('category')
+        .trim()
+        .trim()
+        .isLength({ min: 1 })
+        .escape()
+        .withMessage("Category must not be empty"),
+    body('price')
+        .trim()
+        .isNumeric()
+        .withMessage("Price must be a number")
+        .custom((value) => {
+            if (parseFloat(value) < 0) {
+                throw new Error('Price must not be less than 0');
+            }
+            return true;
+        }),
+    body('inStock')
+        .trim()
+        .isNumeric()
+        .withMessage("quantity must be a number")
+        .custom((value) => {
+            if (parseFloat(value) < 0) {
+                throw new Error('quantity must not be less than 0');
+            }
+            return true;
+        }),
+    asyncHandler(async (req, res, next) => {
+        const errors = validationResult(req)
+        const categories = await Category.find().exec()
+
+        const item = new Item({
+            name: req.body.name,
+            descr: req.body.descr,
+            category: req.body.category,
+            price: req.body.price,
+            inStock: req.body.inStock,
+            imageUrl: req.body.imgUrl
+        })
+
+        if (!errors.isEmpty()) {
+            res.render("item_form", {
+                title: 'create an item',
+                categories: categories,
+                errors: errors.array()
+            })
+        } else {
+            await item.save()
+            res.redirect(item.url)
+        }
+    })
+]
 
 exports.item_delete_get = asyncHandler(async (req, res, next) => {
     const item = await Item.findById(req.params.id).exec()
