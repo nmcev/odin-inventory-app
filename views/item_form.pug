@@ -31,9 +31,10 @@ block content
         div.form-group
             label(for="imgUrl") Image URL:
             input#imgUrl(type="text" name='imgUrl' required value=(undefined === item ? '' : item.imageUrl))
-        .form-group
-            label(for="password") Password:
-            input#password(type="text" name="password" required)
+        if item
+            div.form-group
+                label(for="password") Password:
+                input#password(type="text" name="password" required)
         button.btn.btn-primary(type='submit') Submit
 
     if errors
