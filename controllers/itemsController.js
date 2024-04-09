@@ -120,6 +120,15 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
 })
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
     const item = await Item.findById(req.params.id).exec()
+    const password = req.body.password;
+    const correctPassword = process.env.PASSWORD;
+    if (password !== correctPassword) {
+        res.render('item_delete', {
+            title: `Delete ${item.name}`,
+            error: 'Incorrect password'
+        })
+        return;
+    }
 
     await Item.findByIdAndDelete(req.params.id)
     res.redirect(`/home/categories/${item.category._id}`)
@@ -183,29 +192,37 @@ exports.item_update_post = [
             return true;
         }),
     asyncHandler(async (req, res, next) => {
-        const errors = validationResult(req)
-        const categories = await Category.find().exec()
+        const errors = validationResult(req);
+        const password = req.body.password;
+        const categories = await Category.find().exec();
 
-        const item = new Item({
-            name: req.body.name,
-            descr: req.body.descr,
-            category: req.body.category,
-            price: req.body.price,
-            inStock: req.body.inStock,
-            imageUrl: req.body.imgUrl,
-            _id: req.params.id
-        })
+        const correctPassword = process.env.PASSWORD;
+        if (password !== correctPassword) {
+            errors.errors.push({ value: '', msg: 'Incorrect password', param: 'password', location: 'body' });
+        }
 
         if (!errors.isEmpty()) {
+            const item = await Item.findById(req.params.id).exec();
+
             res.render("item_form", {
                 title: `Updating ${item.name}`,
                 item: item,
                 categories: categories,
                 errors: errors.array()
-            })
+            });
         } else {
-            await Item.findByIdAndUpdate(req.params.id, item, {})
-            res.redirect(item.url)
+            const itemUpdate = {
+                name: req.body.name,
+                descr: req.body.descr,
+                category: req.body.category,
+                price: req.body.price,
+                inStock: req.body.inStock,
+                imageUrl: req.body.imgUrl
+            }
+
+            await Item.findByIdAndUpdate(req.params.id, itemUpdate, {});
+
+            res.redirect('/home/items/' + req.params.id);
         }
     })
 ]

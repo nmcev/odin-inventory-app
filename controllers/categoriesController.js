@@ -79,8 +79,20 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
 })
 
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
-    await Category.findByIdAndDelete(req.params.id)
-    res.redirect('/home/categories')
+    const items = await Item.find({ category: req.params.id }).exec()
+    const password = req.body.password
+
+    if (password !== process.env.PASSWORD) {
+        res.render('category_delete', {
+            title: 'Deleting a category',
+            error: "Incorrect password",
+            items_list:items
+        })
+        
+    } else {
+        await Category.findByIdAndDelete(req.params.id).exec()
+        res.redirect('/home/categories')
+    }
 
 })
 
@@ -108,6 +120,18 @@ exports.category_update_post = [
         .withMessage("Name must be at least 3 characters")
     , asyncHandler(async (req, res, next) => {
         const errors = validationResult(req)
+        const password = req.body.password
+        const correctPassword = process.env.PASSWORD
+
+
+        if (password !== correctPassword) {
+            res.render('category_form', {
+                title: "Update a category",
+                error: "Incorrect password",
+                category: { name: req.body.name }
+            })
+            return;
+        }
 
         const category = new Category({
             name: req.body.name,
@@ -117,12 +141,14 @@ exports.category_update_post = [
         if (!errors.isEmpty()) {
             res.render('category_form', {
                 title: "Update a category",
-                category: category,
-                errors: errors.array()
+                errors: errors.array(),
+                category: category
             })
-        } else {
-            await Category.findByIdAndUpdate(req.params.id, category, {})
-            res.redirect(category.url)
+            return;
         }
+
+        await Category.findByIdAndUpdate(req.params.id, category, {})
+        res.redirect(category.url)
+        
     })
 ]

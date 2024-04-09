@@ -8,8 +8,14 @@ block content
         div
             label(for='name') Category name:
             input#name(type='text' placeholder='Games, Puzzles, etc...' name='name' required value=(undefined === category  ? '' : category.name ))
+        div
+            label(for='password') Password:
+            input#password(type='text' name='password' required)
         button.btn.btn-primary(type='submit') Submit
 
+    if error
+        p= error
+        
     if errors
         ul
             for error in errors

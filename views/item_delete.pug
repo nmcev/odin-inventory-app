@@ -7,4 +7,9 @@ block content
     p Are you sure you want to delete this item?
 
     form(method='POST')
+        div.form-group
+            label(for='password') Password:
+            input#password(type='text' name='password' required)
         button.btn.btn-danger(type='submit') Submit
+    if error
+        p= error
